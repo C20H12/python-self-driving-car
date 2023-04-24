@@ -39,22 +39,31 @@ class Car:
       self.speed = 0
 
     if self.controls.left:
-      self.direction -= 1
+      self.direction -= 0.03
     elif self.controls.right:
-      self.direction += 1
+      self.direction += 0.03
 
     self.x_pos -= math.sin(self.direction) * self.speed
     self.y_pos -= math.cos(self.direction) * self.speed
 
 
   def render(self, screen: pg.Surface):
-    surface = pg.Surface((self.width, self.height))
-    surface.fill("black")
-    surface_rect = surface.get_rect()
-    surface_rect.center = (self.width / 2, self.height / 2)
-    rotated = pg.transform.rotate(surface, self.direction % 360)
-    rotated_rect = rotated.get_rect()
-    rotated_rect.center = surface_rect.center
-    screen.blit(rotated, rotated_rect)
+    offset_x = self.width // 2
+    offset_y = self.height // 2
+    rect_points = [
+      [self.x_pos - offset_x, self.y_pos - offset_y],
+      [self.x_pos + offset_x, self.y_pos - offset_y],
+      [self.x_pos + offset_x, self.y_pos + offset_y],
+      [self.x_pos - offset_x, self.y_pos + offset_y]
+    ]
+    rect_points_new = []
+    sine = math.sin(self.direction)
+    cosine = math.cos(self.direction)
+    for point in rect_points:
+      point_origin = [point[0] - self.x_pos, point[1] - self.y_pos]
+      new_x = point_origin[0] * cosine - point_origin[1] * sine
+      new_y = point_origin[0] * sine + point_origin[1] * cosine
+      rect_points_new.append([new_x + self.x_pos, new_y + self.y_pos])
 
+    pg.draw.polygon(screen, "black", rect_points_new)
     
