@@ -4,7 +4,7 @@ from Car import Car
 
 pg.init()
 
-width, height = 200, 900
+width, height = 300, 900
 screen = pg.display.set_mode((width, height))
 
 car = Car(100, 300, 30, 50)
