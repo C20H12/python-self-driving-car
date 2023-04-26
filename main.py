@@ -17,6 +17,9 @@ def frame(dt):
 
 def onEvent(event):
   car.controls.update(event)
+  if event.type == pg.KEYDOWN and event.key == pg.K_r:
+    car.x_pos = 100
+    car.y_pos = 100
 
 
 clock = pg.time.Clock()
