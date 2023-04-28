@@ -62,7 +62,7 @@ class Car:
     # 0 deg is facing up, so x and y (sin and cos) are switched
     self.x_pos -= math.sin(self.direction) * self.speed
     self.y_pos -= math.cos(self.direction) * self.speed
-
+  
   def render(self, screen: pg.Surface):
     # construct the points for the 4 corners of the car
     center_x = self.x_pos
@@ -93,3 +93,8 @@ class Car:
 
     pg.draw.polygon(screen, "black", rect_points)
     
+  def reset(self, x, y):
+    self.x_pos = x
+    self.y_pos = y
+    self.speed = 0
+    self.direction = 0
