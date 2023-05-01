@@ -6,3 +6,6 @@ def lerp(A: float, B: float, t: float):
   function to get an intermediate value between A and B
   '''
   return A + (B - A) * t
+
+def get_interersection(line_1, line_2):
+  pass

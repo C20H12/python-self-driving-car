@@ -18,7 +18,7 @@ render_layer = pg.transform.scale(screen, (width, road.lane_height))
 def frame():
   render_layer.fill("lightgray")
 
-  car.update()
+  car.update(road.borders)
   # print(car.y_pos)
 
   road.render(render_layer)

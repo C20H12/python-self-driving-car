@@ -18,11 +18,11 @@ class Car:
     self.max_speed = 3
     self.direction = 0
 
-    self.sensor = Sensor(self, count=1)
+    self.sensor = Sensor(self, count=3, spread=math.pi / 2)
   
-  def update(self):
+  def update(self, road_borders):
     self._move()
-    self.sensor.update()
+    self.sensor.update(road_borders)
 
   def _move(self):
     # increase the speed by bit by bit so that it feels smoother
@@ -68,6 +68,8 @@ class Car:
     self.y_pos -= math.cos(self.direction) * self.speed
   
   def render(self, screen: pg.Surface):
+    # reference demo https://www.desmos.com/calculator/xe8kjf55gd
+
     # construct the points for the 4 corners of the car
     center_x = self.x_pos
     center_y = self.y_pos

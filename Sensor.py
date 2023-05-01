@@ -12,7 +12,10 @@ class Sensor:
     
     self.rays = []
 
-  def update(self):
+  def update(self, road_borders):
+    self._cast_rays()
+  
+  def _cast_rays(self):
     self.rays = []
 
     for i in range(self.ray_count):
