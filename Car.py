@@ -1,6 +1,7 @@
 import pygame as pg
 from Controller import Controller
 import math
+from Sensor import Sensor
 
 
 class Car:
@@ -16,9 +17,12 @@ class Car:
     self.friction = 0.05
     self.max_speed = 3
     self.direction = 0
+
+    self.sensor = Sensor(self, count=1)
   
   def update(self):
     self._move()
+    self.sensor.update()
 
   def _move(self):
     # increase the speed by bit by bit so that it feels smoother
@@ -92,6 +96,8 @@ class Car:
       rect_points[i] = (new_x + self.x_pos, new_y + self.y_pos)
 
     pg.draw.polygon(screen, "black", rect_points)
+
+    self.sensor.render(screen)
     
   def reset(self, x, y):
     self.x_pos = x

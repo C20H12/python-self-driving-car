@@ -9,7 +9,7 @@ class Road:
     self.lanes = lanes
 
     self.lane_width = width / lanes
-    self.lane_height = 1e4
+    self.lane_height = 3e4
 
     self.left_edge = x_pos - width / 2
     self.right_edge = x_pos + width / 2
@@ -26,15 +26,23 @@ class Road:
     ]
 
     self.color = "white"
+
+    self.borders = [
+      # (top left, bottom left)
+      (pg.Vector2(self.left_edge, self.top), pg.Vector2(self.left_edge, self.bottom)),
+      # (top right, bottom right)
+      (pg.Vector2(self.right_edge, self.top), pg.Vector2(self.right_edge, self.bottom))
+    ]
   
   def getLaneCenter(self, lane_idx: int):
     return self.lane_x_positions[lane_idx % self.lanes] + self.lane_width // 2
 
   def render(self, screen: pg.Surface):
-    for i in range(len(self.lane_x_positions)):
+    for i in range(1, len(self.lane_x_positions) - 1):
       line_x = self.lane_x_positions[i]
-      if i > 0 and i < self.lanes:
-        for j in range(int(self.top), int(self.bottom), 50):
-          pg.draw.line(screen, self.color, (line_x, j), (line_x, j + 25), 5)
-      else:
-        pg.draw.line(screen, self.color, (line_x, self.top), (line_x, self.bottom), 5)
+      # draw a dashed line with 50px spacing and 25px in length
+      for j in range(int(self.top), int(self.bottom), 50):
+        pg.draw.line(screen, self.color, (line_x, j), (line_x, j + 25), 5)
+    
+    for border in self.borders:
+      pg.draw.line(screen, self.color, (border[0].x, border[0].y), (border[1].x, border[1].y), 5)
