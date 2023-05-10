@@ -2,6 +2,7 @@ const screen = document.querySelector("#screen");
 const angleOutput = document.querySelector("#angle");
 const speedCtrl = document.querySelector("#speed");
 
+
 screen.width = 1000;
 screen.height = 700;
 
@@ -36,7 +37,8 @@ const originRotatingPoints = structuredClone(squarePoints);
 const centerRotatingPoints = structuredClone(squarePoints);
 
 let angle = 0;
-setInterval(() => {
+
+const main = () => {
   ctx.clearRect(0, 0, screen.width, screen.height);
 
   ctx.beginPath();
@@ -57,6 +59,9 @@ setInterval(() => {
     "rgba(255, 0, 0, 0.5)"
   );
   for (let i = 0; i < squarePoints.length; i++) {
+    // rotate the points using the rotation matrix 
+    // [x]   [cos(angle) -sin(angle)] [x]
+    // [y] = [sin(angle)  cos(angle)] [y]
     originRotatingPoints[i][0] = squarePoints[i][0] * Math.cos(angle) - squarePoints[i][1] * Math.sin(angle);
     originRotatingPoints[i][1] = squarePoints[i][0] * Math.sin(angle) + squarePoints[i][1] * Math.cos(angle);
   }
@@ -71,7 +76,9 @@ setInterval(() => {
     "rgba(0, 255, 0, 0.5)"
   );
   for (let i = 0; i < squarePoints.length; i++) {
+    // first translate the points so that the center of the rect is at the origin
     const translatedPoint = [squarePoints[i][0] - rectCenter[0], squarePoints[i][1] - rectCenter[1]];
+    // perform rotation that add the offset back
     centerRotatingPoints[i][0] =
       translatedPoint[0] * Math.cos(angle) - translatedPoint[1] * Math.sin(angle) + rectCenter[0];
     centerRotatingPoints[i][1] =
@@ -84,4 +91,14 @@ setInterval(() => {
     angle = 0;
   }
   angleOutput.value = angle;
-}, speed);
+}
+
+let intervalId = setInterval(main, 167);
+
+let renderSpeed = 100;
+speedCtrl.addEventListener("input", () => {
+  renderSpeed = parseFloat(speedCtrl.value);
+  clearInterval(intervalId);
+  intervalId = setInterval(main, renderSpeed);
+  console.log(renderSpeed)
+});
