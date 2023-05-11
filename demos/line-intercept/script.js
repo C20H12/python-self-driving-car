@@ -1,6 +1,6 @@
 const screen = document.querySelector("#screen");
-screen.width = window.innerWidth;
-screen.height = window.innerHeight;
+screen.width = 500;
+screen.height = 500;
 
 /**@type {CanvasRenderingContext2D} */
 const ctx = screen.getContext("2d");
@@ -25,6 +25,10 @@ class Point {
   }
 }
 
+function lerp(a, b, t) {
+  return a + (b - a) * t
+}
+
 /**
  * get intersection
  * @param {Point} a - line 1 start
@@ -33,39 +37,35 @@ class Point {
  * @param {Point} d - line 2 end
  */
 function getIntersect(a, b, c, d) {
-  /*
-  we can linear interpolate from 1 point to another to find any point on a line
-  by using a factor t that is from 0 to 1
-  x' = lerp(a.x, b.x, t)
-  y' = lerp(a.y, b.y, t)
+  const tTop = (d.x - c.x) * (a.y - c.y) - (d.y - c.y) * (a.x - c.x)
+  const uTop = (c.y - a.y) * (a.x - b.x) - (c.x - a.x) * (a.y - b.y)
+
+  // the divisor is the same
+  const bottom = (d.y - c.y) * (b.x - a.x) - (d.x - c.x) * (b.y - a.y)
+
+  // console.log(bottom)
+  // bottom approaches 0 when the lines approaches parallel
+
+  if (bottom === 0 ){
+    return null;
+  }
   
-  an intersect between 2 lines is when the interpolated point from one line equals
-  an interpolated point on another line
-  lerp(a.x, b.x, t) = lerp(c.x, d.x, u)
-  lerp(a.y, b.y, t) = lerp(c.y, d.y, u)
+  const t = tTop / bottom;
+  const u = uTop / bottom;
 
-  now we need to find the correct t and u values, and use them to get the x and y 
-  coords of the intersection, we expand the function like:
-  a.x + (b.x - a.x) * t = c.x + (d.x - c.x) * u
-  a.y + (b.y - a.y) * t = c.y + (d.y - c.y) * u
+  if (t < 0 || t > 1) {
+    return null;
+  }
 
-  move the c.x and c.y over to the left side:
-  a.x - c.x + (b.x - a.x) * t = (d.x - c.x) * u 
-  a.y - c.y + (b.y - a.y) * t = (d.y - c.y) * u
-
-  can't divide by d.x - c.x, it may be 0, so we need to use subsitution
-  use the 2nd equation and multiply both sides by (d.x - c.x)
-  the first equation is unchanged:
-  a.x - c.x + (b.x - a.x) * t = (d.x - c.x) * u 
-  (d.x - c.x)(a.y - c.y + (b.y - a.y) * t) = (d.y - c.y) * u * (d.x - c.x)
-
-  now there is a (d.x - c.x) * u in the 2nd equation, subsitute:
-  (d.x - c.x)(a.y - c.y + (b.y - a.y) * t) = (d.y - c.y) * (a.x - c.x + (b.x - a.x) * t)
-
-  distribute:
-  (d.x - c.x) * (a.y - c.y) + (d.x - c.x) * (b.y - a.y) * t = (d.y - c.y) * (a.x - c.x) + (d.y - c.y) * (b.x - a.x) * t
-
-  */
+  return {
+    point: new Point(
+      lerp(a.x, b.x, t),
+      lerp(a.y, b.y, t),
+      "i"
+    ),
+    // can be used to calculate how far the intersect is from the starting point
+    offset: t
+  }
 }
 
 
@@ -107,7 +107,10 @@ screen.addEventListener("mouseup", e => {
   }
 })
 
-setInterval(() => {
+
+
+
+function render() {
   ctx.clearRect(0, 0, screen.width, screen.height);
   
   ctx.beginPath();
@@ -125,4 +128,13 @@ setInterval(() => {
   b.draw();
   c.draw();
   d.draw();
-}, 50)
+
+  const intersection = getIntersect(a, b, c, d);
+  if (intersection != null) { 
+    intersection.point.draw();
+  }
+
+  requestAnimationFrame(render);
+}
+
+render();
