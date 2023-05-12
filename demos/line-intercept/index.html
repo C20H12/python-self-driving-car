@@ -44,7 +44,7 @@
   now there is a (dx - cx) * u in the 2nd equation, subsitute to get rid of u:
   (dx - cx) * (ay - cy + (by - ay) * t) = (dy - cy) * (ax - cx + (bx - ax) * t)
 
-  distribute the (dx - cx):
+  distribute the (dx - cx), but keep ay - cy and ax -  cx grouped:
   (dx - cx) * (ay - cy) + (dx - cx) * (by - ay) * t = (dy - cy) * (ax - cx) + (dy - cy) * (bx - ax) * t
 
   swap (dx - cx) * (by - ay) * t with (dy - cy) * (ax - cx) so that t is all on one side:
@@ -57,6 +57,24 @@
       (dx - cx) * (ay - cy) - (dy - cy) * (ax - cx)
   t = ---------------------------------------------
       (dy - cy) * (bx - ax) - (dx - cx) * (by - ay)
+
+  to find u, go back and repreat the same process from step 3
+  moving ax and ay this time
+  (bx - ax) * t = cx - ax + (dx - cx) * u
+  (by - ay) * t = cy - ay + (dy - cy) * u
+
+  use the 2nd equation, multiply both sides by (bx - ax)
+  (bx - ax) * t = cx - ax + (dx - cx) * u
+  (by - ay) * t * (bx - ax) = (cy - ay + (dy - cy) * u) * (bx - ax)
+
+  subsitute to get rid of t
+  (by - ay) * (cx - ax + (dx - cx) * u) = (cy - ay + (dy - cy) * u) * (bx - ax)
+
+  distribute and group
+  (by - ay) * (cx - ax) + (bx - ay) * (dx - cx) * u = (bx - ax) * (cy - ay) + (bx - ax) * (dy - cy) * u
+
+  move u to one side
+  
 
   </pre>
 </body>
