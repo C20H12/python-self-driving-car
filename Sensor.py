@@ -1,6 +1,6 @@
 import math
 import pygame as pg
-from utils import lerp
+from utils import lerp, get_interersection_point
 
 
 class Sensor:
@@ -11,10 +11,37 @@ class Sensor:
     self.ray_spread = spread
     
     self.rays = []
+    self.readings = []
 
   def update(self, road_borders):
     self._cast_rays()
+    self.readings.clear()
+    for ray in self.rays:
+      self.readings.append(
+        self._get_reading(ray, road_borders)
+      )
   
+  def _get_reading(self, ray, borders):
+    touches = []
+    for border in borders:
+      intersection = get_interersection_point(
+        ray[0],
+        ray[1],
+        border[0],
+        border[1]
+      )
+      if intersection:
+        touches.append(intersection)
+    
+    if len(touches) == 0:
+      return None
+    else:
+      # closest intersection to the start of the ray (car center)
+      min_offset = min(map(lambda t: t['offset'], touches))
+      for touch in touches:
+        if touch['offset'] == min_offset:
+          return touch['point']
+
   def _cast_rays(self):
     self.rays = []
 
@@ -34,5 +61,13 @@ class Sensor:
       self.rays.append((start_pos, end_pos))
   
   def render(self, screen: pg.Surface):
-    for ray in self.rays:
-      pg.draw.line(screen, "yellow", ray[0], ray[1], 2)
+    for i in range(self.ray_count):
+      ray_start = self.rays[i][0]
+      ray_end = self.rays[i][1]
+
+      if self.readings[i]:
+        pg.draw.line(screen, "yellow", ray_start, self.readings[i], 2)
+        pg.draw.line(screen, "black", self.readings[i], ray_end, 2)
+      else:
+        pg.draw.line(screen, "yellow", ray_start, ray_end, 2)
+        

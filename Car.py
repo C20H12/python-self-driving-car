@@ -18,7 +18,7 @@ class Car:
     self.max_speed = 3
     self.direction = 0
 
-    self.sensor = Sensor(self, count=3, spread=math.pi / 2)
+    self.sensor = Sensor(self, count=5, spread=math.pi / 2, length=300)
   
   def update(self, road_borders):
     self._move()
