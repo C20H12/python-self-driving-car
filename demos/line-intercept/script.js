@@ -1,4 +1,6 @@
 const screen = document.querySelector("#screen");
+
+
 screen.width = 500;
 screen.height = 500;
 
@@ -37,6 +39,7 @@ function lerp(a, b, t) {
  * @param {Point} d - line 2 end
  */
 function getIntersect(a, b, c, d) {
+  // calculations
   const tTop = (d.x - c.x) * (a.y - c.y) - (d.y - c.y) * (a.x - c.x)
   const uTop = (c.y - a.y) * (a.x - b.x) - (c.x - a.x) * (a.y - b.y)
 
@@ -46,6 +49,7 @@ function getIntersect(a, b, c, d) {
   // console.log(bottom)
   // bottom approaches 0 when the lines approaches parallel
 
+  // if the lines are parallel and not colinear
   if (bottom === 0 ){
     return null;
   }
@@ -53,7 +57,8 @@ function getIntersect(a, b, c, d) {
   const t = tTop / bottom;
   const u = uTop / bottom;
 
-  if (t < 0 || t > 1) {
+  // if the intersection is actually inside the lines
+  if (t < 0 || t > 1 || u < 0 || u > 1) {
     return null;
   }
 
@@ -64,7 +69,8 @@ function getIntersect(a, b, c, d) {
       "i"
     ),
     // can be used to calculate how far the intersect is from the starting point
-    offset: t
+    offset: t,
+    u: u
   }
 }
 
@@ -108,7 +114,11 @@ screen.addEventListener("mouseup", e => {
 })
 
 
-
+const tOutput = document.querySelector("#t");
+const uOutput = document.querySelector("#u");
+const line1Output = document.querySelector("#line1");
+const line2Output = document.querySelector("#line2");
+const intersectOutput = document.querySelector("#intersect");
 
 function render() {
   ctx.clearRect(0, 0, screen.width, screen.height);
@@ -133,6 +143,12 @@ function render() {
   if (intersection != null) { 
     intersection.point.draw();
   }
+
+  tOutput.value = intersection?.offset ?? "null";
+  uOutput.value = intersection?.u ?? "null";
+  line1Output.value = `(${a.x}, ${a.y}) to (${b.x}, ${b.y})`;
+  line2Output.value = `(${c.x}, ${c.y}) to (${d.x}, ${d.y})`;
+  intersectOutput.value = intersection?.point ? `(${intersection.point.x}, ${intersection.point.y})` : "null";
 
   requestAnimationFrame(render);
 }

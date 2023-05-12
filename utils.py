@@ -16,28 +16,30 @@ def get_interersection_point(
   line_2_start: pg.Vector2, 
   line_2_end: pg.Vector2
 ):
-  slope_1 = (line_1_start.y - line_1_end.y) / (line_1_start.x - line_1_end.x)
-  slope_2 = (line_2_start.y - line_2_end.y) / (line_2_start.x - line_2_end.x)
-  
-  slope_diff = slope_1 - slope_2
-  if slope_diff == 0:
-    return None
-  
-  intercept_x = (line_2_start.y - slope_2 * line_2_start.x \
-                 - line_1_start.y + slope_1 * line_1_start.x) \
-                 / (slope_1 - slope_2)
-  intercept_y = slope_1 * intercept_x + line_1_start.y - slope_1 * line_1_start.x
-  
-  line_1_x_bounds = (min(line_1_start.x, line_1_end.x), max(line_1_start.x, line_1_end.x))
-  line_1_y_bounds = (min(line_1_start.y, line_1_end.y), max(line_1_start.y, line_1_end.y))
-  line_2_x_bounds = (min(line_2_start.x, line_2_end.x), max(line_2_start.x, line_2_end.x))
-  line_2_y_bounds = (min(line_2_start.y, line_2_end.y), max(line_2_start.y, line_2_end.y))
+  a = line_1_start
+  b = line_1_end
+  c = line_2_start
+  d = line_2_end
 
-  if intercept_x < line_1_x_bounds[0] or intercept_x > line_1_x_bounds[1] \
-    or intercept_x < line_2_x_bounds[0] or intercept_x > line_2_x_bounds[1] \
-    or intercept_y < line_1_y_bounds[0] or intercept_y > line_1_y_bounds[1] \
-    or intercept_y < line_2_y_bounds[0] or intercept_y > line_2_y_bounds[1]:
+  tTop = (d.x - c.x) * (a.y - c.y) - (d.y - c.y) * (a.x - c.x)
+  uTop = (c.y - a.y) * (a.x - b.x) - (c.x - a.x) * (a.y - b.y)
+
+  bottom = (d.y - c.y) * (b.x - a.x) - (d.x - c.x) * (b.y - a.y)
+
+  if bottom == 0:
     return None
   
-  return pg.Vector2(intercept_x, intercept_y)
+  t = tTop / bottom;
+  u = uTop / bottom;
+
+  if t < 0 or t > 1 or u < 0 or u > 1:
+    return None
+
+  return {
+    'point': pg.Vector2(
+      lerp(a.x, b.x, t),
+      lerp(a.y, b.y, t)
+    ),
+    'offset': t
+  }
 
