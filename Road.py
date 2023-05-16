@@ -9,6 +9,7 @@ class Road:
     self.lanes = lanes
 
     self.lane_width = width / lanes
+    # arbitrary large number to represent infinity, without it being too slow
     self.lane_height = 3e4
 
     self.left_edge = x_pos - width / 2
@@ -34,7 +35,7 @@ class Road:
       (pg.Vector2(self.right_edge, self.top), pg.Vector2(self.right_edge, self.bottom))
     ]
   
-  def getLaneCenter(self, lane_idx: int):
+  def get_lane_center(self, lane_idx: int):
     return self.lane_x_positions[lane_idx % self.lanes] + self.lane_width // 2
 
   def render(self, screen: pg.Surface):

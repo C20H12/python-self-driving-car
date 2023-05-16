@@ -43,3 +43,23 @@ def get_interersection_point(
     'offset': t
   }
 
+def has_intersection(polygon_points_1, polygon_points_2):
+  '''
+  polygon_points_1 - list of points of the first polygon
+  polygon_points_2 - list of points of the second polygon
+  function to check if two polygons intersect
+  it iterates through all the lines formed by each poly and
+  see if any of the lines intersects
+  '''
+  for i in range(len(polygon_points_1)):
+    for j in range(len(polygon_points_2)):
+      # mod the length so that the last point connects to the first at index 0
+      p1 = polygon_points_1[i]
+      p2 = polygon_points_1[(i + 1) % len(polygon_points_1)]
+      p3 = polygon_points_2[j]
+      p4 = polygon_points_2[(j + 1) % len(polygon_points_2)]
+
+      if get_interersection_point(p1, p2, p3, p4) is not None:
+        return True
+      
+  return False

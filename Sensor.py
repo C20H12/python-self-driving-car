@@ -13,15 +13,15 @@ class Sensor:
     self.rays = []
     self.readings = []
 
-  def update(self, road_borders):
+  def update(self, road_borders, other_cars):
     self._cast_rays()
     self.readings.clear()
     for ray in self.rays:
       self.readings.append(
-        self._get_reading(ray, road_borders)
+        self._get_reading(ray, road_borders, other_cars)
       )
   
-  def _get_reading(self, ray, borders):
+  def _get_reading(self, ray, borders, other_cars):
     touches = []
     for border in borders:
       intersection = get_interersection_point(
@@ -32,6 +32,17 @@ class Sensor:
       )
       if intersection:
         touches.append(intersection)
+    
+    for other_car in other_cars:
+      for i in range(len(other_car.rect_points)):
+        intersection = get_interersection_point(
+          ray[0],
+          ray[1],
+          other_car.rect_points[i],
+          other_car.rect_points[(i + 1) % len(other_car.rect_points)]
+        )
+        if intersection:
+          touches.append(intersection)
     
     if len(touches) == 0:
       return None

@@ -2,27 +2,43 @@ import pygame as pg
 from Controller import Controller
 import math
 from Sensor import Sensor
+from utils import has_intersection
 
 
 class Car:
-  def __init__(self, x_pos, y_pos, width, height) -> None:
+  def __init__(self, x_pos, y_pos, width, height, control_mode="man", max_speed = 3) -> None:
+    # define the initial position and size of the car
     self.x_pos = x_pos
     self.y_pos = y_pos
     self.width = width
     self.height = height
-    self.controls = Controller()
 
+    # define a list to store the corners of the rect for collisions
+    self.rect_points = []
+
+    # define the initial physical properites
     self.speed = 0
     self.acceleration = 0.2
     self.friction = 0.05
-    self.max_speed = 3
+    self.max_speed = max_speed
     self.direction = 0
+    self.damaged = False
 
-    self.sensor = Sensor(self, count=5, spread=math.pi / 2, length=300)
+    # link the controller class
+    self.controls = Controller(control_mode)
+
+    # link the sensor that will be used to detect the road borders
+    # only add a sensor if the car is the not a dummy
+    if control_mode != "dum":
+      self.sensor = Sensor(self, count=5, spread=math.pi / 2, length=300)
   
-  def update(self, road_borders):
-    self._move()
-    self.sensor.update(road_borders)
+  def update(self, road_borders, other_cars = []):
+    if not self.damaged:
+      self._move()
+      self._update_corners()
+      self._assess_damage(road_borders, other_cars)
+    if hasattr(self, "sensor"):
+      self.sensor.update(road_borders, other_cars)
 
   def _move(self):
     # increase the speed by bit by bit so that it feels smoother
@@ -67,42 +83,56 @@ class Car:
     self.x_pos -= math.sin(self.direction) * self.speed
     self.y_pos -= math.cos(self.direction) * self.speed
   
-  def render(self, screen: pg.Surface):
-    # reference demo https://www.desmos.com/calculator/xe8kjf55gd
-
+  def _update_corners(self):
     # construct the points for the 4 corners of the car
+    # using the x and y pos as the center
     center_x = self.x_pos
     center_y = self.y_pos
     offset_x = self.width // 2
     offset_y = self.height // 2
-    rect_points = [
-      (center_x - offset_x, center_y - offset_y),
-      (center_x + offset_x, center_y - offset_y),
-      (center_x + offset_x, center_y + offset_y),
-      (center_x - offset_x, center_y + offset_y)
+    self.rect_points = [
+      pg.Vector2(center_x - offset_x, center_y - offset_y),
+      pg.Vector2(center_x + offset_x, center_y - offset_y),
+      pg.Vector2(center_x + offset_x, center_y + offset_y),
+      pg.Vector2(center_x - offset_x, center_y + offset_y)
     ]
 
     # need to use negative dir because the Y axis points down
     sin = math.sin(-self.direction)
     cos = math.cos(-self.direction)
     
-    for i in range(len(rect_points)):
-      point = rect_points[i]
+    for i in range(len(self.rect_points)):
+      point = self.rect_points[i]
       # point is translated so that the center is at the origin
       # ie, it is at the same location relative to 0,0 as it is relative to the center
-      translated_point = (point[0] - self.x_pos, point[1] - self.y_pos)
+      point.x -= self.x_pos
+      point.y -= self.y_pos
       # perform rotation with the rotation matrix
-      new_x = translated_point[0] * cos - translated_point[1] * sin
-      new_y = translated_point[0] * sin + translated_point[1] * cos
+      new_x = point.x * cos - point.y * sin
+      new_y = point.x * sin + point.y * cos
       # translate back to original position
-      rect_points[i] = (new_x + self.x_pos, new_y + self.y_pos)
-
-    pg.draw.polygon(screen, "black", rect_points)
-
-    self.sensor.render(screen)
+      point.x = new_x + self.x_pos
+      point.y = new_y + self.y_pos
+  
+  def _assess_damage(self, road_borders, other_cars):
+    self.damaged = False
+    for border in road_borders:
+      if has_intersection(self.rect_points, border):
+        self.damaged = True
+        break
+    for other_car in other_cars:
+      if has_intersection(self.rect_points, other_car.rect_points):
+        self.damaged = True
+        break
     
-  def reset(self, x, y):
-    self.x_pos = x
-    self.y_pos = y
-    self.speed = 0
-    self.direction = 0
+
+  
+  def render(self, screen: pg.Surface, color = "black"):
+    if self.damaged:
+      color = "gray"
+
+    pg.draw.polygon(screen, color, self.rect_points)
+
+    if hasattr(self, "sensor"):
+      self.sensor.render(screen)
+    

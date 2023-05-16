@@ -2,13 +2,16 @@ import pygame as pg
 
 
 class Controller:
-  def __init__(self) -> None:
+  def __init__(self, mode) -> None:
     self.forward = False
     self.back = False
     self.left = False
     self.right = False
+    
+    if mode == "dum":
+      self.forward = True
 
-  def update(self, event):
+  def update(self, event):    
     if event.type == pg.KEYDOWN:
       if event.key in (pg.K_UP, pg.K_w):
         self.forward = True
