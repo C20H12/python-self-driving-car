@@ -36,6 +36,7 @@ class Road:
     ]
   
   def get_lane_center(self, lane_idx: int):
+    
     return self.lane_x_positions[lane_idx % self.lanes] + self.lane_width // 2
 
   def render(self, screen: pg.Surface):

@@ -2,6 +2,11 @@ import pygame as pg
 
 
 class Controller:
+  '''
+  stores boolean values for the control keys pressed
+  uses auto controlling if mode is dum, which is a npc
+  '''
+  
   def __init__(self, mode) -> None:
     self.forward = False
     self.back = False

@@ -33,10 +33,13 @@ class Car:
       self.sensor = Sensor(self, count=5, spread=math.pi / 2, length=300)
   
   def update(self, road_borders, other_cars = []):
+    # stop moving if damaged
     if not self.damaged:
       self._move()
       self._update_corners()
       self._assess_damage(road_borders, other_cars)
+    
+    # not a dummy car, update the sensor
     if hasattr(self, "sensor"):
       self.sensor.update(road_borders, other_cars)
 
@@ -115,17 +118,17 @@ class Car:
       point.y = new_y + self.y_pos
   
   def _assess_damage(self, road_borders, other_cars):
-    self.damaged = False
+    # self.damaged = False
+    # the car touches the borders
     for border in road_borders:
       if has_intersection(self.rect_points, border):
         self.damaged = True
         break
+    # the car touches other cars
     for other_car in other_cars:
       if has_intersection(self.rect_points, other_car.rect_points):
         self.damaged = True
         break
-    
-
   
   def render(self, screen: pg.Surface, color = "black"):
     if self.damaged:

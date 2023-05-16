@@ -16,6 +16,7 @@ def get_interersection_point(
   line_2_start: pg.Vector2, 
   line_2_end: pg.Vector2
 ):
+  # see demo for explanation
   a = line_1_start
   b = line_1_end
   c = line_2_start
@@ -59,6 +60,7 @@ def has_intersection(polygon_points_1, polygon_points_2):
       p3 = polygon_points_2[j]
       p4 = polygon_points_2[(j + 1) % len(polygon_points_2)]
 
+      # check if any of the edges intersects
       if get_interersection_point(p1, p2, p3, p4) is not None:
         return True
       
