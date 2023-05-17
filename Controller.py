@@ -16,7 +16,10 @@ class Controller:
     if mode == "dum":
       self.forward = True
 
-  def update(self, event):    
+  def update(self, event):
+    # set the values to true when a key is being pressed
+    # and false when they are not
+    # works with WASD and arrow keys
     if event.type == pg.KEYDOWN:
       if event.key in (pg.K_UP, pg.K_w):
         self.forward = True

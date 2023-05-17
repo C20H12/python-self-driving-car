@@ -64,5 +64,5 @@ while running:
   pg.display.flip()
   clock.tick(60)
 
-
+# cleanup
 pg.quit()

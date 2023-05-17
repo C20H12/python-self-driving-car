@@ -16,7 +16,11 @@ def get_interersection_point(
   line_2_start: pg.Vector2, 
   line_2_end: pg.Vector2
 ):
-  # see demo for explanation
+  '''
+  find the intersection point of two lines
+  each line is defined by two points, start and end
+  see demo for more details
+  '''
   a = line_1_start
   b = line_1_end
   c = line_2_start
