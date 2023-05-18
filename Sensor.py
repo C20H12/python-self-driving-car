@@ -65,7 +65,7 @@ class Sensor:
       # only return the closest one
       for touch in touches:
         if touch['offset'] == min_offset:
-          return touch['point']
+          return touch
 
   def _cast_rays(self):
     self.rays = []
@@ -99,8 +99,17 @@ class Sensor:
 
       # if it detects something, draw the rays black from the hit point onward
       if self.readings[i]:
-        pg.draw.line(screen, "yellow", ray_start, self.readings[i], 2)
-        pg.draw.line(screen, "black", self.readings[i], ray_end, 2)
+        point = self.readings[i]['point']
+        pg.draw.line(screen, "yellow", ray_start, point, 2)
+        pg.draw.line(screen, "black", point, ray_end, 2)
       else:
         pg.draw.line(screen, "yellow", ray_start, ray_end, 2)
-        
+  
+  def get_offsets(self):
+    '''
+    return the offset value, ie how far the intersection is from the center of the car
+    '''
+    return [
+      reading['offset'] if reading else 0
+      for reading in self.readings
+    ]

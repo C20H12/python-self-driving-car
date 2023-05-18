@@ -17,7 +17,7 @@ road = Road(screen.get_width() / 2, screen.get_width() * 0.9)
 render_layer = pg.transform.scale(screen, (width, road.lane_height))
 
 # define a car and other cars, at a quarter of the road
-car = Car(road.get_lane_center(1), road.lane_height / 4, 30, 50, max_speed=5)
+car = Car(road.get_lane_center(1), road.lane_height / 4, 30, 50, max_speed=5, control_mode="ai")
 other_cars = [
   Car(road.get_lane_center(1), road.lane_height / 4 - 300, 30, 50, control_mode="dum")
 ]

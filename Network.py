@@ -15,7 +15,29 @@ class NeuralNetwork:
       for i in range(len(neuron_count_list) - 1)
     ]
   
-  def feed_forward()
+  def feed_forward(self, given_inputs):
+    '''
+    given_inputs - a list of numbers to feed into the first level
+    '''
+    outputs = self.levels[0].feed_forward(given_inputs)
+
+    # put the outputs of the first level into the next level and repeat
+    for i in range(1, len(self.levels)):
+      outputs = self.levels[i].feed_forward(outputs)
+    
+    # final outputs
+    return outputs
+
+  def seriralize(self):
+    net_levels = [
+      level.__dict__ for level in self.levels
+    ]
+    for level in net_levels:
+      for k,v in level.items():
+        print(k, v)
+      print()
+    print('---')
+    # print(str(net_levels).replace(",", "\n"))
 
 class Level:
   '''
@@ -60,6 +82,9 @@ class Level:
       self.biases[i] = random() * 2 - 1
   
   def feed_forward(self, given_inputs):
+    '''
+    given_inputs - a list of numbers that will be fed into the input neurons
+    '''
     # set the inputs from the raw inputs
     # the give_inputs are going to come from the sensors
     for i in range(len(self.inputs)):

@@ -3,6 +3,7 @@ from Controller import Controller
 import math
 from Sensor import Sensor
 from utils import has_intersection
+from Network import NeuralNetwork
 
 
 class Car:
@@ -31,6 +32,15 @@ class Car:
     # only add a sensor if the car is the not a dummy
     if control_mode != "dum":
       self.sensor = Sensor(self, count=5, spread=math.pi / 2, length=300)
+      
+      # give the car a network
+      # it will have the amount of sensors number of nodes, then 6 nodes on a hidden layer
+      # then 4 output nodes for each direction control
+      self.brain = NeuralNetwork([self.sensor.ray_count, 6, 4])
+
+    # only use the brain if it an ai
+    if control_mode == "ai":
+      self.use_brain = True
   
   def update(self, road_borders, other_cars = []):
     # stop moving if damaged
@@ -42,6 +52,20 @@ class Car:
     # not a dummy car, update the sensor
     if hasattr(self, "sensor"):
       self.sensor.update(road_borders, other_cars)
+
+      # feed the sensor data to the first layer
+      offsets = self.sensor.get_offsets()
+      # outputs 4 values correcponding to each direction
+      outputs = self.brain.feed_forward(offsets)
+      print(outputs)
+
+      # if I wanted this car to be self controlled, then control it with the outputs
+      if self.use_brain:
+        self.controls.forward = outputs[0]
+        self.controls.back = outputs[1]
+        self.controls.left = outputs[2]
+        self.controls.right = outputs[3]
+      self.brain.seriralize()
 
   def _move(self):
     # increase the speed by bit by bit so that it feels smoother
