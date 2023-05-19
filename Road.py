@@ -19,7 +19,7 @@ class Road:
 
     self.lane_width = width / lanes
     # arbitrary large number to represent infinity, without it being too slow
-    self.lane_height = 3e4
+    self.lane_height = 4e4
 
     self.left_edge = x_pos - width / 2
     self.right_edge = x_pos + width / 2
