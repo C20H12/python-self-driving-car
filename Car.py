@@ -57,15 +57,14 @@ class Car:
       offsets = self.sensor.get_offsets()
       # outputs 4 values correcponding to each direction
       outputs = self.brain.feed_forward(offsets)
-      print(outputs)
 
       # if I wanted this car to be self controlled, then control it with the outputs
-      if self.use_brain:
+      if hasattr(self, "use_brain") and self.use_brain:
         self.controls.forward = outputs[0]
         self.controls.back = outputs[1]
         self.controls.left = outputs[2]
         self.controls.right = outputs[3]
-      self.brain.seriralize()
+      # self.brain.print_formatted()
 
   def _move(self):
     # increase the speed by bit by bit so that it feels smoother

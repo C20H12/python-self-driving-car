@@ -107,9 +107,10 @@ class Sensor:
   
   def get_offsets(self):
     '''
-    return the offset value, ie how far the intersection is from the center of the car
+    return the offset value modified, now it represents the distance from ray end
+    to the contact point
     '''
     return [
-      reading['offset'] if reading else 0
+      1 - reading['offset'] if reading else 0
       for reading in self.readings
     ]

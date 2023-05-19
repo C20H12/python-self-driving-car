@@ -1,4 +1,5 @@
 from random import random
+import json
 
 
 class NeuralNetwork:
@@ -28,7 +29,7 @@ class NeuralNetwork:
     # final outputs
     return outputs
 
-  def seriralize(self):
+  def print_formatted(self):
     net_levels = [
       level.__dict__ for level in self.levels
     ]
@@ -37,7 +38,13 @@ class NeuralNetwork:
         print(k, v)
       print()
     print('---')
-    # print(str(net_levels).replace(",", "\n"))
+
+  def serialize(self):
+    net_levels = [
+      level.__dict__ for level in self.levels
+    ]
+    return json.dumps(net_levels)
+
 
 class Level:
   '''
