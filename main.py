@@ -22,12 +22,12 @@ road_render_layer = pg.transform.scale(screen, (road_width, road.lane_height))
 network_render_layer = pg.Surface((width - road_width, height))
 
 # changes ai controlled or manual "ai" or "man"
-main_car_mode = "man"
+main_car_mode = "ai"
 
-# define a car and other cars, at a quarter of the road
-car = Car(road.get_lane_center(1), road.lane_height / 4, 30, 50, max_speed=5, control_mode=main_car_mode)
+# define a car and other cars, at the start of the road
+car = Car(road.get_lane_center(1), road.lane_height / 2 - 100, 30, 50, max_speed=5, control_mode=main_car_mode)
 other_cars = [
-  Car(road.get_lane_center(1), road.lane_height / 4 - 300, 30, 50, control_mode="dum")
+  Car(road.get_lane_center(1), road.lane_height / 2 - 400, 30, 50, control_mode="dum")
 ]
 
 # this function is called every frame

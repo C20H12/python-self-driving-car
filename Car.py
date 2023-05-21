@@ -60,11 +60,13 @@ class Car:
 
       # if I wanted this car to be self controlled, then control it with the outputs
       if hasattr(self, "use_brain") and self.use_brain:
+        # use the outputted 1 or 0 to controll the directions
         self.controls.forward = outputs[0]
-        self.controls.back = outputs[1]
-        self.controls.left = outputs[2]
-        self.controls.right = outputs[3]
+        self.controls.left = outputs[1]
+        self.controls.right = outputs[2]
+        self.controls.back = outputs[3]
       # self.brain.print_formatted()
+      # print(outputs)
 
   def _move(self):
     # increase the speed by bit by bit so that it feels smoother
