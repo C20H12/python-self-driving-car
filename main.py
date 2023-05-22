@@ -34,10 +34,10 @@ cars = Car.generate(100, road.get_lane_center(1), road.lane_height / 2 - 100, 30
 
 best_car = cars[0]
 if NeuralNetwork.has_saved("best"):
-  # best_car.brain.load_from_file("best")
-  for car in cars:
-    car.brain.load_from_file("best")
-    car.brain.mutate(0.2)
+  best_car.brain.load_from_file("best")
+  for i in range(1, len(cars)):
+    cars[i].brain.load_from_file("best")
+    cars[i].brain.mutate(0.1)
   print("loaded brain")
   best_car.brain.print_formatted()
 else:
@@ -48,7 +48,11 @@ else:
 other_cars = [
   Car(road.get_lane_center(1), road.lane_height / 2 - 400, 30, 50, control_mode="dum"),
   Car(road.get_lane_center(0), road.lane_height / 2 - 600, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(2), road.lane_height / 2 - 600, 30, 50, control_mode="dum")
+  Car(road.get_lane_center(2), road.lane_height / 2 - 600, 30, 50, control_mode="dum"),
+  Car(road.get_lane_center(0), road.lane_height / 2 - 800, 30, 50, control_mode="dum"),
+  Car(road.get_lane_center(1), road.lane_height / 2 - 800, 30, 50, control_mode="dum"),
+  Car(road.get_lane_center(1), road.lane_height / 2 - 1000, 30, 50, control_mode="dum"),
+  Car(road.get_lane_center(2), road.lane_height / 2 - 1000, 30, 50, control_mode="dum"),
 ]
 
 
@@ -66,6 +70,7 @@ def frame(dt):
   
   # the best car is the one that went the furthest up and stays in a lane
   car_min_y = min(fitness(car, road_centers) for car in cars)
+  global best_car
   best_car = next(filter(lambda car: fitness(car, road_centers) == car_min_y, cars), cars[0])
 
   # draw the road first so it is under the cars 
@@ -106,7 +111,7 @@ def onEvent(event: pg.event):
     if event.key == pg.K_r:
       best_car.brain.remove_saved("best")
       print("removed brain")
-      
+
     if event.key == pg.K_q:
       pg.quit()
       quit()

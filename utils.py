@@ -80,4 +80,4 @@ def fitness(car, lane_centers):
   '''
   initial = car.y_pos
   closest_lane_dist = min(abs(lane - car.x_pos) for lane in lane_centers)
-  return initial - closest_lane_dist
+  return initial + closest_lane_dist
