@@ -69,3 +69,15 @@ def has_intersection(polygon_points_1, polygon_points_2):
         return True
       
   return False
+
+def fitness(car, lane_centers):
+  '''
+  car - the car to calculate the fitness of
+  lane_centers - the x position of the center of each lane
+  function to test how 'good' a car performs
+  the car that goes the furthest up is the best
+  but it gets reduced if it does not stay in the lane
+  '''
+  initial = car.y_pos
+  closest_lane_dist = min(abs(lane - car.x_pos) for lane in lane_centers)
+  return initial - closest_lane_dist

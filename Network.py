@@ -1,5 +1,7 @@
 from random import random
 import json
+import os
+from utils import lerp
 
 
 class NeuralNetwork:
@@ -28,8 +30,33 @@ class NeuralNetwork:
     
     # final outputs
     return outputs
+  
+  def mutate(self, amount = 1):
+    '''
+    amount - the amount of mutation, a number between 0 and 1
+    determines the percent, ie how much to mutate
+    if 1 then eveything is randomized
+    if 0 nothing changes
+    if in between, an intermediate value will be chosen from the original to a random one
+    '''
+    for level in self.levels:
+      for i in range(len(level.biases)):
+        level.biases[i] = lerp(
+          level.biases[i],
+          random() * 2 - 1,
+          amount
+        )
+      for i in range(len(level.weights)):
+        for j in range(len(level.weights[i])):
+          level.weights[i][j] = lerp(
+            level.weights[i][j],
+            random() * 2 - 1,
+            amount
+          )
+
 
   def print_formatted(self):
+    '''prints each level's parameters on each line'''
     net_levels = [
       level.__dict__ for level in self.levels
     ]
@@ -39,11 +66,30 @@ class NeuralNetwork:
       print()
     print('---')
 
-  def serialize(self):
+  def save_to_file(self, file_name):
+    '''saves the brain as a json file'''
     net_levels = [
       level.__dict__ for level in self.levels
     ]
-    return json.dumps(net_levels)
+    with open(f'./models/{file_name}.json', "w") as file:
+      json.dump(net_levels, file)
+
+  def load_from_file(self, file_name):
+    '''loads from a json file, sets the levels' parameters to the saved ones'''
+    with open(f"./models/{file_name}.json", "r") as file:
+      net_levels = json.load(file)
+      for i in range(len(self.levels)):
+        self.levels[i].__dict__ = net_levels[i]
+
+  def remove_saved(self, file_name):
+    '''remove the saved json'''
+    if os.path.exists(f"./models/{file_name}.json"):
+      os.remove(f"./models/{file_name}.json")
+  
+  @staticmethod
+  def has_saved(file_name):
+    '''check if the file exists'''
+    return os.path.exists(f"./models/{file_name}.json")
 
 
 class Level:

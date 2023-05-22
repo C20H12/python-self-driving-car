@@ -65,14 +65,16 @@ class Car:
         self.controls.left = outputs[1]
         self.controls.right = outputs[2]
         self.controls.back = outputs[3]
+        
       # self.brain.print_formatted()
       # print(outputs)
 
   def _move(self):
     # increase the speed by bit by bit so that it feels smoother
+    # note: not using elif so if both is pressed it does not move
     if self.controls.forward:
       self.speed += self.acceleration
-    elif self.controls.back:
+    if self.controls.back:
       self.speed -= self.acceleration
     
     # set the speed to the max so that is cannot exceed max_speed
@@ -104,7 +106,7 @@ class Car:
       # turn the car to a direction, the car's unit circle is rotation by 90 deg
       if self.controls.left:
         self.direction += 0.03 * flip_factor
-      elif self.controls.right:
+      if self.controls.right:
         self.direction -= 0.03 * flip_factor
 
     # 0 deg is facing up, so x and y (sin and cos) are switched
@@ -154,13 +156,27 @@ class Car:
       if has_intersection(self.rect_points, other_car.rect_points):
         self.damaged = True
         break
+    
+    # it goes off the road's end
+    if self.y_pos >= 2e4:
+      self.damaged = True
   
-  def render(self, screen: pg.Surface, color = "black"):
+  def render(self, screen: pg.Surface, color = "black", draw_sensor = False):
+    # draw the car
     if self.damaged:
       color = "gray"
 
     pg.draw.polygon(screen, color, self.rect_points)
 
-    if hasattr(self, "sensor"):
+    # only draw the sensors for non dummy car, and those that should have it (ie best car)
+    if hasattr(self, "sensor") and draw_sensor:
       self.sensor.render(screen)
-    
+
+  @staticmethod
+  def generate(amount, x_pos, y_pos, width, height):
+    # generate a bunch of cars that are self controlled for the genetic algorithm
+    cars = [
+      Car(x_pos, y_pos, width, height, "ai", 5)
+      for _ in range(amount)
+    ]
+    return cars
