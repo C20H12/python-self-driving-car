@@ -8,7 +8,7 @@ class Sensor:
   a sensor that detects if its rays hit something
   this class' lifecycle is dependent on Car
   '''
-  def __init__(self, on_car, count = 3, length = 100, spread = math.pi / 4) -> None:
+  def __init__(self, on_car, count = 3, length = 70, spread = math.pi / 4) -> None:
     self.car = on_car
     self.ray_count = count
     self.ray_len = length
