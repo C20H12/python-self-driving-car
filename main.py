@@ -1,3 +1,5 @@
+import os
+import sys
 import pygame as pg
 from Car import Car
 from Road import Road
@@ -104,15 +106,20 @@ def onEvent(event: pg.event):
   
   # using keys to save a model that looks good
   if event.type == pg.KEYDOWN:
-    if event.key == pg.K_e:
+    if event.key == pg.K_z:
       best_car.brain.save_to_file("best")
       print("saved brain")
       best_car.brain.print_formatted()
-    if event.key == pg.K_r:
+    if event.key == pg.K_x:
       best_car.brain.remove_saved("best")
       print("removed brain")
 
+    if event.key == pg.K_r:
+      pg.quit()
+      os.system("echo restarting")
+      os.execv(sys.executable, ['python'] + sys.argv)
     if event.key == pg.K_q:
+      print("echo quitting")
       pg.quit()
       quit()
 
@@ -137,4 +144,5 @@ while running:
   dt = clock.tick(60)
 
 # cleanup
+print("quitting")
 pg.quit()
