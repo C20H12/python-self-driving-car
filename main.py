@@ -32,7 +32,7 @@ network_render_layer = pg.Surface((width - road_width, height))
 # car = Car(road.get_lane_center(1), road.lane_height / 3 - 100, 30, 50, max_speed=5, control_mode=main_car_mode)
 
 # for training, generate a bunch of ai cars
-cars = Car.generate(100, road.get_lane_center(1), road.lane_height / 2 - 100, 30, 50)
+cars = Car.generate(1, road.get_lane_center(1), road.lane_height / 2 - 100, 30, 50)
 
 best_car = cars[0]
 if NeuralNetwork.has_saved("best"):
@@ -55,6 +55,8 @@ other_cars = [
   Car(road.get_lane_center(1), road.lane_height / 2 - 800, 30, 50, control_mode="dum"),
   Car(road.get_lane_center(1), road.lane_height / 2 - 1000, 30, 50, control_mode="dum"),
   Car(road.get_lane_center(2), road.lane_height / 2 - 1000, 30, 50, control_mode="dum"),
+  Car(road.get_lane_center(0), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
+  Car(road.get_lane_center(1), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
 ]
 
 
