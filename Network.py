@@ -152,6 +152,7 @@ class Level:
 
       # if the output sum is greater than the bias, it will fire
       if output_sum > self.biases[i]:
+        # using binary nodes (they can't partially fire) because the controller is binary 
         self.outputs[i] = 1
       else:
         self.outputs[i] = 0

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>network demo</title>
+
+  <script>
+    function lerp(a, b, t) {
+      return a + (b - a) * t
+    }
+    
+    function getRGBA(value){
+        const alpha=Math.abs(value);
+        const R=value<0?0:255;
+        const G=R;
+        const B=value>0?0:255;
+        return "rgba("+R+","+G+","+B+","+alpha+")";
+    }
+  </script>
+  <script src="network.js"></script>
+  <script src="visualizer.js"></script>
+  <script src="script.js" defer></script>
+
+  <style>
+    body {
+      display: flex;
+    }
+    #inputs {
+      margin: 1rem;
+    }
+    .mainArea {
+      border: 1px solid black;
+      margin: 1rem;
+      padding: .5rem;
+    }
+    output {
+      margin-left: 5px;
+      border: 1px solid black;
+      padding: 0 5px;
+    }
+    #run {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="netCanvas"></canvas>
+  
+  <div id="inputs">
+    
+    <div class="mainArea">
+      <div>
+        <lable>Number of input nodes</lable>
+        <input type="number" value="1" min="1" step="1" id="inputNodes">
+      </div>
+      
+      <div id="inputArea">
+        <div>
+          <label>Input Value for input node 1</label>
+          <input type="number" value="0.5" min="0" max="1" step="0.01" class="inputNodeValue">
+        </div>
+      </div>
+    </div>
+
+    <div class="mainArea">
+      <div>
+        <label>Number of hidden layers</label>
+        <input type="number" value="1" min="1" step="1" id="layers">
+      </div>
+
+      <div id="layersArea">
+        <div>
+          <label>Number of nodes in hidden layer 1</label>
+          <input type="number" value="1" min="1" step="1" class="layerNodes">
+        </div>
+      </div>
+    </div>
+
+    <div class="mainArea">
+      <div>
+        <label>Number of output nodes</label>
+        <input type="number" value="1" min="1" step="1" id="outputNodes">
+      </div>
+
+      <div  id="outputArea">
+        <div>
+          <lable>Value of output node 1</lable>
+          <output class="outputNodeValue"></output>
+        </div>
+      </div>
+    </div>
+
+    <div class="mainArea">
+      <button id="run">Run</button>
+    </div>
+  </div>
+</body>
+</html>
