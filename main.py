@@ -6,6 +6,8 @@ from Road import Road
 from Visualizer import Visualizer
 from utils import fitness
 from Network import NeuralNetwork
+from uuid import uuid4
+from Menu import Menu
 
 
 pg.init()
@@ -14,6 +16,15 @@ pg.init()
 # initialize the pygame window with this size
 width, height = 700, 900
 screen = pg.display.set_mode((width, height))
+
+
+welcome_text = pg.font.SysFont("Arial", 30) \
+  .render(
+    "WASD to move, Z to save a network, X to delete a network, R to reload windoe, Q to quit", 
+    True, (255, 255, 255)
+  )
+menu_displayed = True
+menu = Menu()
 
 
 # define a road, center is at the middle of width, width is 90% of the road width
@@ -47,6 +58,7 @@ else:
 
 
 # define other cars, at the start of the road in front of car
+other_cars = Car.generate_dum(road_centers, road.lane_height, amount=8)
 other_cars = [
   Car(road.get_lane_center(1), road.lane_height / 2 - 400, 30, 50, control_mode="dum"),
   Car(road.get_lane_center(0), road.lane_height / 2 - 600, 30, 50, control_mode="dum"),
@@ -58,7 +70,6 @@ other_cars = [
   Car(road.get_lane_center(0), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
   Car(road.get_lane_center(1), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
 ]
-
 
 # this function is called every frame
 def frame(dt):
@@ -121,7 +132,7 @@ def onEvent(event: pg.event):
       os.system("echo restarting")
       os.execv(sys.executable, ['python'] + sys.argv)
     if event.key == pg.K_q:
-      print("echo quitting")
+      print("quitting")
       pg.quit()
       quit()
 

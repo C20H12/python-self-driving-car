@@ -1,3 +1,4 @@
+from random import randint
 import pygame as pg
 from Controller import Controller
 import math
@@ -179,4 +180,18 @@ class Car:
       Car(x_pos, y_pos, width, height, "ai", 5)
       for _ in range(amount)
     ]
+    return cars
+
+  @staticmethod
+  def generate_dum(road_centers, road_height, amount = None):
+    # generate a bunch of cars that are dummys on random lanes
+    cars = []
+    for i in range(200, int(road_height), 100):
+      rand_lane = randint(0, len(road_centers) - 1)
+      should_spawn_2 = randint(0, 10) <= 7
+      if should_spawn_2:
+        cars.append(Car(road_centers[rand_lane - 1], road_height / 2 - i, 30, 50, control_mode="dum"))
+      cars.append(Car(road_centers[rand_lane], road_height / 2 - i, 30, 50, control_mode="dum"))
+      if amount and len(cars) >= amount:
+        break
     return cars
