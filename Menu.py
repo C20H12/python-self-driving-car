@@ -26,7 +26,7 @@ class Menu:
     self.select_text_color = customizations.get('selected_text', (0, 0, 0))
     self.font = customizations.get('font', "Arial")
 
-  def render(self, width, height):
+  def render(self, screen: pg.Surface, x, y, width, height):
     '''
     width: the width of the menu
     height: the height of the menu
@@ -56,7 +56,7 @@ class Menu:
       # draw the rect to the surface 
       surf.blit(rect_surf, (0, item_height * i))
     
-    return surf
+    screen.blit(surf, (x, y))
 
   def update_controls(self, key):
     # only increment if it is not at the end of the list

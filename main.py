@@ -8,6 +8,7 @@ from utils import fitness
 from Network import NeuralNetwork
 from uuid import uuid4
 from Menu import Menu
+from glob import glob
 
 
 pg.init()
@@ -18,14 +19,12 @@ width, height = 700, 900
 screen = pg.display.set_mode((width, height))
 
 
-welcome_text = pg.font.SysFont("Arial", 30) \
+welcome_text = pg.font.SysFont("Arial", 16) \
   .render(
-    "WASD to move, Z to save a network, X to delete a network, R to reload windoe, Q to quit", 
+    "WASD to move, Z to save a network, X to delete a network, R to reload windoe, Q to quit.  " + \
+    "Choose a mode to begin:", 
     True, (255, 255, 255)
   )
-menu_displayed = True
-menu = Menu()
-
 
 # define a road, center is at the middle of width, width is 90% of the road width
 road_width = 300
@@ -71,8 +70,24 @@ other_cars = [
   Car(road.get_lane_center(1), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
 ]
 
+menu_displayed = True
+menu = Menu({
+  "Manual Mode": lambda: print(1) ,
+  "AI Mode, Defined, Testing (1 car)": lambda: print(1) ,
+  "AI Mode, Defined, Training (100 cars)": lambda: print(1) ,
+  "AI Mode, Endless, Testing (1 car)": lambda: print(1),
+  "AI Mode, Endless, Training (100 cars)": lambda: print(1),
+})
+
+saved_menu = Menu({path.split('\\')[-1]: path for path in glob("./models/*.json")})
+
 # this function is called every frame
 def frame(dt):
+  if menu_displayed:
+    screen.blit(welcome_text, (10, 30))
+    menu.render(screen, 100, 100, 300, 200)
+    return;
+
   # clear the screen, background
   road_render_layer.fill("lightgray")
   network_render_layer.fill((79, 79, 79))
@@ -117,16 +132,21 @@ def frame(dt):
 def onEvent(event: pg.event):
   # car.controls.update(event)
   
-  # using keys to save a model that looks good
   if event.type == pg.KEYDOWN:
+
+    if menu_displayed:
+      menu.update_controls(event.key)
+    
+    # using keys to save a model that looks good
     if event.key == pg.K_z:
-      best_car.brain.save_to_file("best")
+      best_car.brain.save_to_file(str(uuid4())[:8])
       print("saved brain")
       best_car.brain.print_formatted()
     if event.key == pg.K_x:
-      best_car.brain.remove_saved("best")
+      best_car.brain.remove_saved(str(uuid4())[:8])
       print("removed brain")
 
+    # using keys to terminate the script and re run for easier reloading
     if event.key == pg.K_r:
       pg.quit()
       os.system("echo restarting")
