@@ -186,7 +186,7 @@ class Car:
   def generate_dum(road_centers, road_height, amount = None):
     # generate a bunch of cars that are dummys on random lanes
     cars = []
-    for i in range(200, int(road_height), 100):
+    for i in range(200, int(road_height), 200):
       rand_lane = randint(0, len(road_centers) - 1)
       should_spawn_2 = randint(0, 10) <= 7
       if should_spawn_2:
