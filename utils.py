@@ -1,3 +1,5 @@
+import os
+import sys
 import pygame as pg
 
 
@@ -81,3 +83,12 @@ def fitness(car, lane_centers):
   initial = car.y_pos
   closest_lane_dist = min(abs(lane - car.x_pos) for lane in lane_centers)
   return initial + closest_lane_dist
+
+def restart_script():
+  '''
+  function to restart the script
+  passes the cmd arguments into the shell again
+  '''
+  pg.quit()
+  os.system("echo restarting")
+  os.execv(sys.executable, ['python'] + sys.argv)
