@@ -1,30 +1,30 @@
 import os
-import sys
 import pygame as pg
 from Car import Car
 from Road import Road
 from Visualizer import Visualizer
-from utils import fitness
+from utils import fitness, restart_script
 from Network import NeuralNetwork
-from uuid import uuid4
-from Menu import Menu
-from glob import glob
 
 
+if os.path.exists("./session.txt"):
+  with open("./session.txt", "r") as f:
+    session_id, mode, file_name = f.read().split(",")
+    mode = int(mode)
+else:
+  exit_code = os.system("python initializing.py")
+  if exit_code == 1:
+    print("exiting main: error occured when initializing")
+    quit()
+  else:
+    restart_script()
+
+print("session loaded", file_name, mode)
 pg.init()
-
 
 # initialize the pygame window with this size
 width, height = 700, 900
 screen = pg.display.set_mode((width, height))
-
-
-welcome_text = pg.font.SysFont("Arial", 16) \
-  .render(
-    "WASD to move, Z to save a network, X to delete a network, R to reload windoe, Q to quit.  " + \
-    "Choose a mode to begin:", 
-    True, (255, 255, 255)
-  )
 
 # define a road, center is at the middle of width, width is 90% of the road width
 road_width = 300
@@ -37,56 +37,53 @@ road_render_layer = pg.transform.scale(screen, (road_width, road.lane_height))
 # layer that the visualized neural network will use
 network_render_layer = pg.Surface((width - road_width, height))
 
-# for testing, changes ai controlled or manual "ai" or "man"
-# main_car_mode = "ai"
-# car = Car(road.get_lane_center(1), road.lane_height / 3 - 100, 30, 50, max_speed=5, control_mode=main_car_mode)
 
-# for training, generate a bunch of ai cars
-cars = Car.generate(1, road.get_lane_center(1), road.lane_height / 2 - 100, 30, 50)
+# initalization options, mode corresponds to a menu option
+# manual cars
+if mode == 1 or mode == 2:
+  cars = [Car(
+    road.get_lane_center(1), road.lane_height / 2 - 100, 30, 50, max_speed=5, control_mode="man"
+  )]
 
-best_car = cars[0]
-if NeuralNetwork.has_saved("best"):
-  best_car.brain.load_from_file("best")
-  for i in range(1, len(cars)):
-    cars[i].brain.load_from_file("best")
-    cars[i].brain.mutate(0.1)
-  print("loaded brain")
-  best_car.brain.print_formatted()
-else:
-  print("no brain found")
+# ai cars
+elif mode >= 3:
+  cars_amount = 1
+  if mode == 4 or mode == 6:
+    cars_amount = 100
+  cars = Car.generate(cars_amount, road.get_lane_center(1), road.lane_height / 2 - 100, 30, 50)
+  best_car = cars[0]
+  if NeuralNetwork.has_saved(file_name):
+    best_car.brain.load_from_file(file_name)
+    for i in range(1, len(cars)):
+      cars[i].brain.load_from_file(file_name)
+      cars[i].brain.mutate(0.1)
+    print("loaded brain")
+    best_car.brain.print_formatted()
+  else:
+    print("no brain found")
 
 
 # define other cars, at the start of the road in front of car
-other_cars = Car.generate_dum(road_centers, road.lane_height, amount=8)
-other_cars = [
-  Car(road.get_lane_center(1), road.lane_height / 2 - 400, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(0), road.lane_height / 2 - 600, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(2), road.lane_height / 2 - 600, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(0), road.lane_height / 2 - 800, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(1), road.lane_height / 2 - 800, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(1), road.lane_height / 2 - 1000, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(2), road.lane_height / 2 - 1000, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(0), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
-  Car(road.get_lane_center(1), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
-]
+# endless cars
+if mode == 2 or mode == 5 or mode == 6:
+  other_cars = Car.generate_dum(road_centers, road.lane_height, amount=80)
+# defined cars
+else:
+  other_cars = [
+    Car(road.get_lane_center(1), road.lane_height / 2 - 400, 30, 50, control_mode="dum"),
+    Car(road.get_lane_center(0), road.lane_height / 2 - 600, 30, 50, control_mode="dum"),
+    Car(road.get_lane_center(2), road.lane_height / 2 - 600, 30, 50, control_mode="dum"),
+    Car(road.get_lane_center(0), road.lane_height / 2 - 800, 30, 50, control_mode="dum"),
+    Car(road.get_lane_center(1), road.lane_height / 2 - 800, 30, 50, control_mode="dum"),
+    Car(road.get_lane_center(1), road.lane_height / 2 - 1000, 30, 50, control_mode="dum"),
+    Car(road.get_lane_center(2), road.lane_height / 2 - 1000, 30, 50, control_mode="dum"),
+    Car(road.get_lane_center(0), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
+    Car(road.get_lane_center(1), road.lane_height / 2 - 1200, 30, 50, control_mode="dum"),
+  ]
 
-menu_displayed = True
-menu = Menu({
-  "Manual Mode": lambda: print(1) ,
-  "AI Mode, Defined, Testing (1 car)": lambda: print(1) ,
-  "AI Mode, Defined, Training (100 cars)": lambda: print(1) ,
-  "AI Mode, Endless, Testing (1 car)": lambda: print(1),
-  "AI Mode, Endless, Training (100 cars)": lambda: print(1),
-})
 
-saved_menu = Menu({path.split('\\')[-1]: path for path in glob("./models/*.json")})
-
-# this function is called every frame
+# called every frame
 def frame(dt):
-  if menu_displayed:
-    screen.blit(welcome_text, (10, 30))
-    menu.render(screen, 100, 100, 300, 200)
-    return;
 
   # clear the screen, background
   road_render_layer.fill("lightgray")
@@ -130,29 +127,25 @@ def frame(dt):
 
 # this function is called every time there is an event
 def onEvent(event: pg.event):
-  # car.controls.update(event)
+  if mode == 1 or mode == 2:
+    cars[0].controls.update(event)
   
   if event.type == pg.KEYDOWN:
-
-    if menu_displayed:
-      menu.update_controls(event.key)
-    
     # using keys to save a model that looks good
     if event.key == pg.K_z:
-      best_car.brain.save_to_file(str(uuid4())[:8])
+      best_car.brain.save_to_file(file_name)
       print("saved brain")
       best_car.brain.print_formatted()
     if event.key == pg.K_x:
-      best_car.brain.remove_saved(str(uuid4())[:8])
+      best_car.brain.remove_saved(file_name)
       print("removed brain")
 
     # using keys to terminate the script and re run for easier reloading
     if event.key == pg.K_r:
-      pg.quit()
-      os.system("echo restarting")
-      os.execv(sys.executable, ['python'] + sys.argv)
+      restart_script()
     if event.key == pg.K_q:
-      print("quitting")
+      print("quitting session")
+      os.remove("./session.txt")
       pg.quit()
       quit()
 
@@ -178,4 +171,5 @@ while running:
 
 # cleanup
 print("quitting")
+os.remove("./session.txt")
 pg.quit()
