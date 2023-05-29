@@ -6,20 +6,25 @@ from Visualizer import Visualizer
 from utils import fitness, restart_script
 from Network import NeuralNetwork
 
-
+# check if a current session exists
+# load in the details from the session file
 if os.path.exists("./session.txt"):
   with open("./session.txt", "r") as f:
     session_id, mode, file_name = f.read().split(",")
     mode = int(mode)
+# run the initilizing script, then reload
 else:
   exit_code = os.system("python initializing.py")
   if exit_code == 1:
+    # if the initilizing was terminated (ie, the X was pressed or Ctrl C), quit
     print("exiting main: error occured when initializing")
     quit()
   else:
     restart_script()
 
+# loaded session, start of main script
 print("session loaded", file_name, mode)
+
 pg.init()
 
 # initialize the pygame window with this size

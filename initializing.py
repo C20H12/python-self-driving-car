@@ -6,6 +6,7 @@ from glob import glob
 
 pg.init()
 
+# a separate windows will be spawned
 screen = pg.display.set_mode((700, 700))
 
 # global session id for naming new model files
